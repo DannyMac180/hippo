@@ -1,0 +1,14 @@
+{
+  "timeout_seconds": 300,
+  "harnesses": [
+    {
+      "name": "third-party",
+      "command": [
+        "python3", "-c",
+        "import subprocess, sys; p = subprocess.run(['third-party-agent', '--memory-dir', sys.argv[1]], input=sys.argv[2], text=True); sys.exit(p.returncode)",
+        "{memory_dir}",
+        "{prompt}"
+      ]
+    }
+  ]
+}

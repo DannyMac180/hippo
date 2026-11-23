@@ -1,0 +1,29 @@
+{
+  "timeout_seconds": 300,
+  "harnesses": [
+    {
+      "name": "codex",
+      "command": [
+        "python3", "-c",
+        "import json, os, sys\nroot = json.dumps(sys.argv[1], ensure_ascii=False)\nroots = 'permissions.handoff.workspace_roots={' + root + '=true}'\nos.execvp('codex', ['codex', *sys.argv[2:-1], '-c', roots, '--', sys.argv[-1]])",
+        "{memory_dir}",
+        "-a", "never", "exec", "--ephemeral", "--skip-git-repo-check",
+        "--ignore-user-config", "--strict-config",
+        "-c", "default_permissions=\"handoff\"",
+        "-c", "permissions.handoff.filesystem={\":minimal\"=\"read\",\":workspace_roots\"=\"read\"}",
+        "-c", "permissions.handoff.network.enabled=false",
+        "-c", "web_search=\"disabled\"",
+        "{prompt}"
+      ]
+    },
+    {
+      "name": "claude",
+      "command": [
+        "claude", "--print", "--restricted", "--strict-mcp-config",
+        "--no-session-persistence", "--disable-slash-commands",
+        "--permission-mode", "dontAsk", "--tools", "Read,Glob,Grep",
+        "--add-dir", "{memory_dir}", "--", "{prompt}"
+      ]
+    }
+  ]
+}
