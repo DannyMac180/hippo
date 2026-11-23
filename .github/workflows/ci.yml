@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Configure git identity for tests
+        run: |
+          git config --global user.name "hippo-ci"
+          git config --global user.email "hippo@example.org"
+      - name: Run the full test suite
+        run: |
+          (cd memlint && python -m unittest -q) && \
+          (cd handoff && python -m unittest -q) && \
+          (cd dream && python -m unittest -q) && \
+          (cd examples && python -m unittest -q) && \
+          python -m unittest discover -s acceptance -q

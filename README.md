@@ -24,20 +24,26 @@ Point your coding agent (Claude Code, Codex, Antigravity, etc.) at `https://gith
 
 > Set up hippo from https://github.com/DannyMac180/hippo using my notes folder `<path or obsidian://open?vault=MyVault>`. Follow `docs/AGENT_SETUP.md`, ask me before modifying global instruction files, and verify with `memlint --all` and `dream_check`.
 
-Or clone and run the setup helper directly:
+Or install it yourself. The clone is the install, and `hippo update` keeps it current:
 
 ```bash
-git clone https://github.com/DannyMac180/hippo.git
-cd hippo
+git clone https://github.com/DannyMac180/hippo.git ~/.hippo
 
 # Works with an Obsidian URI, file:// URL, or any plain folder path
-python3 examples/setup_hippo.py "obsidian://open?vault=MyVault"   --harness claude --harness codex --harness antigravity --dry-run
+python3 ~/.hippo/hippo.py setup "obsidian://open?vault=MyVault" \
+  --harness claude --harness codex --harness antigravity --dry-run
+
+# Drop --dry-run to apply. Setup remembers your choices and links ~/.local/bin/hippo.
+hippo update --check   # is there a newer release?
+hippo update           # install it and refresh your harness stanzas (notes are never touched)
 
 # Or initialize a fresh git-backed starter folder
-python3 examples/init_memory.py ./my-memory
-python3 memlint/memlint.py ./my-memory --all
-python3 dream/dream_check.py ./my-memory
+python3 ~/.hippo/examples/init_memory.py ./my-memory
+hippo lint ./my-memory
+hippo dream-check ./my-memory
 ```
+
+Every merge to `main` is tested and published as a tagged release; see [docs/RELEASING.md](docs/RELEASING.md).
 
 See [docs/AGENT_SETUP.md](docs/AGENT_SETUP.md) for the agent runbook and [docs/quickstart.md](docs/quickstart.md) for manual setup.
 
@@ -46,6 +52,8 @@ See [docs/AGENT_SETUP.md](docs/AGENT_SETUP.md) for the agent runbook and [docs/q
 | Path | What it is |
 |---|---|
 | `docs/architecture.md` | Four-layer memory model, MUST/SHOULD harness contract, steering profiles, dreaming triggers, privacy/poisoning controls, and acceptance bars. |
+| `hippo.py` | The `hippo` command: `setup`, `update` (release channel via git tags), `version`, `lint`, `dream-check`. |
+| `docs/RELEASING.md` | How `hippo update` works and how merges to `main` become releases. |
 | `docs/AGENT_SETUP.md` | Step-by-step runbook for agents setting up `hippo` for a user from an Obsidian URI or folder path. |
 | `docs/PUBLIC_ROADMAP.md` | Public roadmap (v0.1 shipped, v0.2 next, v0.3+ later). |
 | `docs/quickstart.md` | Manual first-run walkthrough from a clean clone. |
