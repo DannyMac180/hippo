@@ -4,7 +4,11 @@ Instructions for coding agents working in `hippo`.
 
 ## Setting up hippo for a user
 
-If the user asked you to set up `hippo` for their Obsidian vault or notes folder, follow `docs/AGENT_SETUP.md` and use `examples/setup_hippo.py`.
+If the user asked you to set up `hippo` for their Obsidian vault or notes folder, follow `docs/AGENT_SETUP.md` and use `hippo.py setup` (a wrapper around `examples/setup_hippo.py` that also enables `hippo update`).
+
+## Releases
+
+Every push to `main` is tested and tagged by `.github/workflows/release.yml` (see `docs/RELEASING.md`). Label a pull request `release:minor`, `release:major`, or `release:skip` to change the default patch bump.
 
 ## Code and test conventions
 

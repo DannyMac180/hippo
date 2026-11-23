@@ -2,6 +2,15 @@
 
 `hippo` uses only the Python 3 standard library (no `pip install`).
 
+## 0. Install (and update later)
+
+```bash
+git clone https://github.com/DannyMac180/hippo.git ~/.hippo
+cd ~/.hippo
+```
+
+Once you run `python3 hippo.py setup <memory folder> --harness <name>` (see `docs/AGENT_SETUP.md`), `hippo update` installs new releases. See `docs/RELEASING.md`.
+
 ## 1. Create a starter memory folder
 
 ```bash

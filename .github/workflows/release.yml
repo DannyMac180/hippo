@@ -1,0 +1,77 @@
+name: Release
+
+# Every push to main (normally a merged pull request) gets tested and, if it passes,
+# tagged and published as a GitHub release. Users pick it up with `hippo update`.
+# Labels on the merged PR choose the bump: release:major, release:minor, release:skip
+# (default: patch).
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: Version bump for a manual release
+        type: choice
+        options: [patch, minor, major]
+        default: patch
+
+permissions:
+  contents: write
+  pull-requests: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Configure git identity for tests
+        run: |
+          git config --global user.name "hippo-ci"
+          git config --global user.email "hippo@example.org"
+      - name: Run the full test suite
+        run: |
+          (cd memlint && python -m unittest -q) && \
+          (cd handoff && python -m unittest -q) && \
+          (cd dream && python -m unittest -q) && \
+          (cd examples && python -m unittest -q) && \
+          python -m unittest discover -s acceptance -q
+      - name: Read labels from the merged pull request
+        id: labels
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT: ${{ github.event_name }}
+          BUMP: ${{ inputs.bump }}
+        run: |
+          if [ "$EVENT" = "workflow_dispatch" ]; then
+            labels="release:$BUMP"
+          else
+            labels=$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/pulls" \
+              --jq '[.[].labels[].name] | unique | join(",")' || true)
+          fi
+          echo "PR labels: ${labels:-(none)}"
+          echo "labels=$labels" >> "$GITHUB_OUTPUT"
+      - name: Compute the next version
+        id: version
+        env:
+          LABELS: ${{ steps.labels.outputs.labels }}
+        run: |
+          tag=$(python scripts/release_version.py --labels "$LABELS")
+          echo "Next tag: ${tag:-(no release)}"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+      - name: Publish the release
+        if: steps.version.outputs.tag != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          gh release create "$TAG" --target "$GITHUB_SHA" --title "hippo $TAG" --generate-notes
