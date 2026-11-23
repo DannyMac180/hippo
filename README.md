@@ -14,6 +14,10 @@ Every coding agent now ships its own private memory store. That traps your decis
 2. **Dream on necessity, not on a blind timer** — A deterministic, zero-token trigger check (`dream/dream_check.py`) watches for conflicts, note backlogs, lint regressions, budget pressure, overdue review dates, or a 28-day drift backstop. When nothing fired, zero tokens are spent. When a trigger fires, `dream/dream_pass.py` writes a **proposal** for human review — never silently rewriting live memory.
 3. **Four-layer hierarchy where pages earn their keep** — Raw transcripts stay in each harness's own logs (referenced by pointer), session notes live in `daily/` (one writer per file), synthesized pages live in `projects/`/`people/`/`notes/` only when they combine multiple sources and stay smaller than what they summarize, and the injected layer stays strictly budgeted (`<= 200` lines / `25 KB`, stanza `<= 10` lines).
 
+## Go deeper
+
+I write [**Attention Heads**](https://attentionheads.substack.com/?utm_source=github&utm_medium=readme&utm_campaign=hippo) — deep, evidence-backed writing on AI, cognition, and agentic engineering. The **Agentic Engineering Field Notes** series is where I publish practical advice on the craft of using AI. [Subscribe](https://attentionheads.substack.com/subscribe?utm_source=github&utm_medium=readme&utm_campaign=hippo) to get new posts to your inbox.
+
 ## Set up with your agent in 60 seconds
 
 Point your coding agent (Claude Code, Codex, Antigravity, etc.) at `https://github.com/DannyMac180/hippo` and your Obsidian URI or notes path:
